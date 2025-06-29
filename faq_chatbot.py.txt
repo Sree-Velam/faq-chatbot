@@ -1,0 +1,74 @@
+import nltk
+import string
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import tkinter as tk
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# Step 1: FAQ data
+faq_data = {
+    "What is your return policy?": "You can return any item within 30 days of purchase.",
+    "How long does delivery take?": "Delivery usually takes 3-5 business days.",
+    "Do you offer customer support?": "Yes, we offer 24/7 customer support.",
+    "Can I change my order?": "You can change your order within 24 hours of placing it.",
+    "What payment methods are accepted?": "We accept credit cards, debit cards, and PayPal.",
+    "Do you ship internationally?": "Yes, we ship to over 100 countries worldwide."
+}
+
+# Step 2: Preprocess text
+def preprocess(text):
+    text = text.lower()
+    tokens = word_tokenize(text)
+    stop_words = set(stopwords.words('english'))
+    tokens = [word for word in tokens if word not in stop_words and word not in string.punctuation]
+    return ' '.join(tokens)
+
+questions = list(faq_data.keys())
+processed_questions = [preprocess(q) for q in questions]
+
+# Step 3: Vectorize using TF-IDF
+vectorizer = TfidfVectorizer()
+question_vectors = vectorizer.fit_transform(processed_questions)
+
+# Step 4: Matching function
+def get_best_match(user_question):
+    user_q_processed = preprocess(user_question)
+    user_q_vector = vectorizer.transform([user_q_processed])
+    similarities = cosine_similarity(user_q_vector, question_vectors)
+    best_index = similarities.argmax()
+    best_score = similarities[0][best_index]
+    
+    if best_score < 0.3:
+        return "I'm sorry, I couldn't find a relevant answer. Please try rephrasing your question."
+    
+    best_question = questions[best_index]
+    return faq_data[best_question]
+
+# Step 5: GUI with Tkinter
+def on_ask():
+    user_input = entry.get()
+    if user_input:
+        response = get_best_match(user_input)
+        chat_log.insert(tk.END, "You: " + user_input + "\n")
+        chat_log.insert(tk.END, "Bot: " + response + "\n\n")
+        entry.delete(0, tk.END)
+
+# Create GUI window
+root = tk.Tk()
+root.title("FAQ Chatbot")
+
+chat_log = tk.Text(root, height=20, width=60, padx=10, pady=10, font=("Helvetica", 12))
+chat_log.pack()
+
+entry = tk.Entry(root, width=60, font=("Helvetica", 12))
+entry.pack(padx=10, pady=10)
+
+button = tk.Button(root, text="Ask", command=on_ask, font=("Helvetica", 12), bg="lightblue")
+button.pack()
+
+root.mainloop()

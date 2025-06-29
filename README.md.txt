@@ -1,0 +1,37 @@
+# FAQ Chatbot
+
+A simple FAQ Chatbot built using Python, NLTK, and Tkinter. It allows users to ask questions and intelligently matches them to the closest predefined FAQ using NLP and cosine similarity.
+
+## 🚀 Features
+
+- 🔍 NLP-based question understanding (tokenizing, stopword removal, TF-IDF)
+- 🎯 Cosine similarity for best match selection
+- 🖥️ Graphical User Interface (GUI) using Tkinter
+- 🧠 Easy to customize with your own FAQ list
+
+## 🛠️ Technologies Used
+
+- Python 3
+- NLTK
+- scikit-learn
+- Tkinter (for GUI)
+
+## 📦 Installation
+
+### 1. Clone the repository or download the files
+
+```bash
+git clone https://github.com/Sree-Velam/faq-chatbot.git
+cd faq-chatbot
+
+2. Install the required libraries
+bash
+Copy
+Edit
+pip install -r requirements.txt
+
+3. Run the chatbot
+bash
+Copy
+Edit
+python faq_chatbot.py
